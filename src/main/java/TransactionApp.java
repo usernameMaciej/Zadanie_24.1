@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class TransactionApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        TransactionDao transactionDao = new TransactionDao();
+        TransactionService transactionService = new TransactionService(scanner);
         int userOption;
 
         do {
@@ -16,11 +16,11 @@ public class TransactionApp {
 
             switch (option) {
                 case EXIT -> System.out.println("Koniec programu");
-                case ADD -> transactionDao.add();
-                case MODIFY -> transactionDao.modify();
-                case DELETE -> transactionDao.delete();
-                case SHOW_INCOME -> transactionDao.showIncome();
-                case SHOW_EXPENSE -> transactionDao.showExpense();
+                case ADD -> transactionService.add();
+                case MODIFY -> transactionService.modify();
+                case DELETE -> transactionService.delete();
+                case SHOW_INCOME -> transactionService.showIncome();
+                case SHOW_EXPENSE -> transactionService.showExpense();
                 default -> System.out.println("Zły wybór opcji");
             }
         } while (userOption != Option.EXIT.id);

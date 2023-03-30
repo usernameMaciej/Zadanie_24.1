@@ -18,7 +18,7 @@ public class TransactionDao {
         closeConnection();
     }
 
-    public void printTransaction(String sql) {
+    private void printTransaction(String sql) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -35,13 +35,8 @@ public class TransactionDao {
         }
     }
 
-    public void delete() {
+    public void delete(Long id) {
         connect();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Podaj id transakcji, którą chcesz usunąć");
-        long id = scanner.nextLong();
-        scanner.nextLine();
 
         try {
             String sql = "DELETE FROM home_budget.transaction WHERE id = ?";
@@ -51,31 +46,12 @@ public class TransactionDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         closeConnection();
     }
 
-    public void modify() {
+    public void modify(Transaction transaction) {
         connect();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Podaj id transakcji, którą chcesz zaktualizować");
-        long id = scanner.nextLong();
-        scanner.nextLine();
-
-        System.out.println("Podaj typ (wydatki lub przychody)");
-        String type = scanner.nextLine();
-
-        System.out.println("Podaj opis");
-        String description = scanner.nextLine();
-
-        System.out.println("Podaj kwotę");
-        int amount = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.println("Podaj datę");
-        Date date = Date.valueOf(scanner.nextLine());
-
-        Transaction transaction = new Transaction(id, type, description, amount, date);
 
         try {
             String sql = "UPDATE home_budget.transaction SET type = ?, description = ?, amount = ?, date = ?";
@@ -86,24 +62,8 @@ public class TransactionDao {
         closeConnection();
     }
 
-    public void add() {
+    public void add(Transaction transaction) {
         connect();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Podaj typ transakcji (wydatki lub przychody)");
-        String type = scanner.nextLine();
-
-        System.out.println("Podaj opis transakcji");
-        String description = scanner.nextLine();
-
-        System.out.println("Podaj kwotę transakcji");
-        int amount = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.println("Podaj datę transakcji");
-        Date date = Date.valueOf(scanner.nextLine());
-
-        Transaction transaction = new Transaction(type, description, amount, date);
         try {
             String sql = "INSERT INTO home_budget.transaction(type, description, amount, date) VALUES (?, ?, ?, ?)";
             executeStatement(transaction, sql);
