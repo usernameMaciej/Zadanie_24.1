@@ -1,38 +1,46 @@
 import java.sql.*;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionDao {
     private Connection connection;
 
-    public void showExpense() {
+    public List<Transaction> showExpense() {
         connect();
+
         String sql = "SELECT * FROM home_budget.transaction WHERE type = 'wydatki'";
-        printTransaction(sql);
-        closeConnection();
+
+        return executeTransactions(sql);
     }
 
-    public void showIncome() {
+    public List<Transaction> showIncome() {
         connect();
+
         String sql = "SELECT * FROM home_budget.transaction WHERE type = 'przychody'";
-        printTransaction(sql);
-        closeConnection();
+
+        return executeTransactions(sql);
     }
 
-    private void printTransaction(String sql) {
+    private List<Transaction> executeTransactions(String sql) {
+        List<Transaction> transactions = new ArrayList<>();
+
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
                 long id = resultSet.getLong("id");
                 String type = resultSet.getString("type");
                 String description = resultSet.getString("description");
                 int amount = resultSet.getInt("amount");
                 Date date = resultSet.getDate("date");
-                System.out.println(id + " - " + type + ", " + description + ", kwota transakcji: " + amount + ", data: " + date);
+                transactions.add(new Transaction(id, type, description, amount, date));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        closeConnection();
+        return transactions;
     }
 
     public void delete(Long id) {
@@ -44,7 +52,7 @@ public class TransactionDao {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         closeConnection();
@@ -57,7 +65,7 @@ public class TransactionDao {
             String sql = "UPDATE home_budget.transaction SET type = ?, description = ?, amount = ?, date = ?";
             executeStatement(transaction, sql);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         closeConnection();
     }
@@ -68,7 +76,7 @@ public class TransactionDao {
             String sql = "INSERT INTO home_budget.transaction(type, description, amount, date) VALUES (?, ?, ?, ?)";
             executeStatement(transaction, sql);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         closeConnection();
     }
@@ -86,7 +94,7 @@ public class TransactionDao {
         try {
             connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -94,13 +102,13 @@ public class TransactionDao {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            System.err.println("Sterownik do bazy nie zostal odnaleziony.");
+            throw new RuntimeException(e);
         }
 
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/home_budget?serverTimezone=UTC", "root", "asd123");
         } catch (SQLException e) {
-            System.err.println("Błąd podczas nawiązywania połączenia");
+            throw new RuntimeException(e);
         }
     }
 }

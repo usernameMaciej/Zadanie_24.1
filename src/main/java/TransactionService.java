@@ -1,4 +1,5 @@
 import java.sql.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class TransactionService {
@@ -24,6 +25,7 @@ public class TransactionService {
         Date date = Date.valueOf(scanner.nextLine());
 
         Transaction transaction = new Transaction(type, description, amount, date);
+
         transactionDao.add(transaction);
     }
 
@@ -60,10 +62,12 @@ public class TransactionService {
     }
 
     public void showIncome() {
-        transactionDao.showIncome();
+        List<Transaction> transactions = transactionDao.showIncome();
+        System.out.println(transactions);
     }
 
     public void showExpense() {
-        transactionDao.showExpense();
+        List<Transaction> transactions = transactionDao.showExpense();
+        System.out.println(transactions);
     }
 }
